@@ -36,19 +36,19 @@ namespace GetCapital.TodoList.UI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> MarkAsCompleted(int id)
         {
-            var response = await _todoItemService.MarkAsCompleted(id);
+            var response = await _todoItemService.MarkAsCompletedAsync(id);
             if (response.Data == null)
                 return BadRequest(response);
-            return Ok(await _todoItemService.GetAllAsync());
+            return Ok(response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteItem(int id)
         {
-            var response = await _todoItemService.Delete(id);
+            var response = await _todoItemService.DeleteAsync(id);
             if (response.Data == null)
                 return BadRequest(response);
-            return Ok(await _todoItemService.GetAllAsync());
+            return Ok(response);
         }
     }
 }

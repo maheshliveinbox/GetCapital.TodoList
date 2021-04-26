@@ -1,20 +1,83 @@
-import React, { Component } from 'react';
-import { Route } from 'react-router';
-import { Layout } from './components/Layout';
-import { TodoList } from './components/todo/list/TodoList';
-import { TodoItem } from './components/todo/item/TodoItem';
+import { useState, useEffect } from 'react'
+import { Container } from 'reactstrap';
+import Header from './components/Header';
+import AddTodoItem from './components/todo/item/AddTodoItem';
+import TodoList from './components/todo/list/TodoList';
 
-import './custom.css'
+const App = () => {
+  const [todoList, setTodoList] = useState([]);
 
-export default class App extends Component {
-  static displayName = App.name;
+  useEffect(() => {
+    const getTodoList = async () => {
+      const todoListFromServer = await fetchTodoList();
+      setTodoList(todoListFromServer.data);
+    }
 
-  render () {
-    return (
-      <Layout>
-        <Route exact path='/' component={TodoList} />
-        <Route path='/todo-item' component={TodoItem} />
-      </Layout>
-    );
+    getTodoList();
+  }, [])
+
+  const fetchTodoList = async () => {
+    const response = await fetch('api/TodoItems');
+    const data = await response.json();
+
+    return data;
   }
+
+  const AddTodo = (e) => {
+    postNewItem(e.todoItem);
+  }
+
+  const postNewItem = async (todoItem) => {
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Name: todoItem })
+    };
+
+    const res = await fetch('api/TodoItems', requestOptions);
+    const data = await res.json();
+    
+    setTodoList(data.data);
+  }
+
+  const deleteTask = async (id) => {
+    const res = await fetch(`api/TodoItems/${id}`, {
+      method: "DELETE"
+    });
+    const data = await res.json();
+    
+    if(data.success)
+      setTodoList(data.data) 
+    else
+      alert('Error deleting task!');
+  }
+
+  const togleTask = async (id) => {
+    const res = await fetch(`api/TodoItems/${id}`, {
+      method: "PUT"
+    });
+    const data = await res.json();
+
+    if(data.success)
+      setTodoList(data.data) 
+    else
+      alert('Error toggling task!');
+  }
+
+  return (
+      <Container>
+        <Header />
+        <AddTodoItem addTaskToList={AddTodo} />
+        {todoList.length > 0 ? (
+          <TodoList 
+            todoList={todoList}
+            onComplete={togleTask}
+            onDelete={deleteTask} />
+            ) : (
+              <p>Not tasks to show!</p>
+            )}
+      </Container>
+  )
 }
+
+export default App;

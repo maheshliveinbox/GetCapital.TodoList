@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -54,14 +55,46 @@ namespace GetCapital.TodoList.Application.Services.TodoItem
             return serviceResponse;
         }
 
-        public Task<ServiceResponse<List<Models.TodoItem>>> MarkAsCompleted(int id)
+        public async Task<ServiceResponse<List<GetTodoItemsDto>>> MarkAsCompletedAsync(int id)
         {
-            throw new System.NotImplementedException();
+            var serviceResponse = new ServiceResponse<List<GetTodoItemsDto>>();
+            try
+            {
+                var toggleItem = await _context.TodoItems.FirstAsync(t => t.Id.Equals(id));
+                toggleItem.IsCompleted = !toggleItem.IsCompleted;
+
+                _context.TodoItems.Update(toggleItem);
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = _context.TodoItems.Select(i => _mapper.Map<GetTodoItemsDto>(i)).ToList();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.ToString();
+            }
+            return serviceResponse;
         }
 
-        public Task<ServiceResponse<List<Models.TodoItem>>> Delete(int id)
+        public async Task<ServiceResponse<List<GetTodoItemsDto>>> DeleteAsync(int id)
         {
-            throw new System.NotImplementedException();
+            var serviceResponse = new ServiceResponse<List<GetTodoItemsDto>>();
+            try
+            {
+                var deleteItem = await _context.TodoItems.FirstAsync(t => t.Id.Equals(id));
+                _context.TodoItems.Remove(deleteItem);
+
+                await _context.SaveChangesAsync();
+
+                serviceResponse.Data = _context.TodoItems.Select(i => _mapper.Map<GetTodoItemsDto>(i)).ToList();
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.ToString();
+            }
+
+            return serviceResponse;
         }
     }
 }

@@ -1,55 +1,28 @@
-import React, { Component } from 'react';
-import { Form, Row, Col, Button } from 'react-bootstrap';
-import { TodoList } from '../list/TodoList';
+import { Col, Row } from "reactstrap";
+import { ListGroupItem } from "reactstrap";
 
-export class TodoItem extends Component {
-  static displayName = TodoItem.name;
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
-  constructor (props){
-    super(props);
-
-    this.addTodoItem = this.addTodoItem.bind(this);
-  }
-
-  addTodoItem(e) {
-    console.log(this.txtNewItem.value);
-
-    this.postNewItem(this.txtNewItem.value);
-    
-    e.preventDefault();
-  }
-
-  render () {
+const TodoItem = ({ todoItem, onComplete, onDelete }) => {
     return (
-          <form onSubmit={this.addTodoItem}>
-            <Row className="justify-content-md-center">
-                <Col xs lg="8">
-                  <Form.Control 
-                    className="mb-2" 
-                    name="txtNewItem"
-                    id="txtNewTask" 
-                    placeholder="New Task"
-                    ref={i => (this.txtNewItem = i)} />
-                </Col>
-                <Col md="auto">
-                  <Button className="mb-2" type="submit">
-                    Add
-                  </Button>
-                </Col>
-            </Row>
-            </form>
-    );
-  }
-
-  async postNewItem(taskName) {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ Name: taskName })
-    };
-
-    fetch('api/TodoItems', requestOptions)
-        .then(response => response.json())
-        .then(data => this.setState({ todoItems: data.data, loading: false }));
-  }
+            <ListGroupItem>
+                <Row>
+                    <Col xs="1" className="text-center">
+                        <input 
+                            type="checkbox" 
+                            onChange={() => onComplete(todoItem.id)} 
+                            checked={todoItem.isCompleted} ></input>
+                    </Col>
+                    <Col className={todoItem.isCompleted ? "text-left strikethrough" : "text-left"}>{todoItem.name}</Col>
+                    <Col xs="1" className="deleteIcon">
+                        <FontAwesomeIcon 
+                            icon={faTrash} 
+                            onClick={() => onDelete(todoItem.id)} />
+                    </Col>
+                </Row>
+            </ListGroupItem>
+    )
 }
+
+export default TodoItem;
