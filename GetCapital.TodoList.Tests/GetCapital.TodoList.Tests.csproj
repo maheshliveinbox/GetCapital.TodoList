@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GetCapital.TodoList.Application\GetCapital.TodoList.Application.csproj" />
     <ProjectReference Include="..\GetCapital.TodoList.UI\GetCapital.TodoList.UI.csproj" />
   </ItemGroup>
 
