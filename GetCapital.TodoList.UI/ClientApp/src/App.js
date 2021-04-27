@@ -74,7 +74,7 @@ const App = () => {
             onComplete={togleTask}
             onDelete={deleteTask} />
             ) : (
-              <p>Not tasks to show!</p>
+              <p>No tasks to show!</p>
             )}
       </Container>
   )
